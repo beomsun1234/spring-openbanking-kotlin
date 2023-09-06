@@ -7,7 +7,7 @@ import javax.persistence.*
 class Member(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long,
+    var id: Long?=null,
     var email: String,
     var password: String,
     var openBankCi: String?=null,
