@@ -15,9 +15,11 @@ class MemberService(
     private val memberRepository: MemberRepository,
 ) {
 
+    @Transactional
     suspend fun signUp(signUpDto: SignUpDto): Long{
         return memberRepository.save(signUpDto.toEntity()).id!!
     }
+
 
     suspend fun login(loginDto: loginDto): MemberDto{
         val member = memberRepository.findMemberByEmail(loginDto.email).orElseThrow()
@@ -30,6 +32,16 @@ class MemberService(
     suspend fun findMemberById(memberId:Long): MemberDto{
         val member = memberRepository.findById(memberId).orElseThrow()
         return MemberDto.from(member)
+    }
+    @Transactional
+    suspend fun updateOpenBankCi(memberId:Long, openBankCi:String){
+        val member = memberRepository.findById(memberId).orElseThrow()
+        member.updateOpenBankCi(openBankCi)
+    }
+    @Transactional
+    suspend fun updateOpenBankId(memberId:Long, openBankId:String){
+        val member = memberRepository.findById(memberId).orElseThrow()
+        member.updateOpenBankId(openBankId)
     }
 
 }
