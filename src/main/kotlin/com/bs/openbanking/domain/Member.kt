@@ -26,4 +26,7 @@ class Member(
     fun hasOpenBankCi():Boolean{
         return !(this.openBankCi == null || this.openBankCi!!.isBlank())
     }
+    fun hasOpenBankId():Boolean{
+        return !(this.openBankId == null || this.openBankId!!.isBlank())
+    }
 }
