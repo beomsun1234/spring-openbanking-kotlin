@@ -21,6 +21,7 @@ class WebClientConfig {
                     .build())
             }
         return WebClient.builder()
+            .baseUrl("https://testapi.openbanking.or.kr")
             .clientConnector(ReactorClientHttpConnector(httpClient))
             .build()
     }
