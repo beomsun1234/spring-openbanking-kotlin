@@ -2,6 +2,7 @@ package com.bs.openbanking.repository
 
 import com.bs.openbanking.domain.OpenBankToken
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -68,6 +69,30 @@ internal class OpenBankTokenRepositoryTest(
                 )
             )
         }
+    }
+
+    @Test
+    @Rollback
+    @DisplayName("토큰이 존재한다.")
+    fun existsByMemberId(){
+        //given
+        openBankTokenRepository.save(OpenBankToken(
+            memberId = 1L,
+            accessToken = "test",
+            refreshToken = "test",
+            expiresIn = 1L
+        ))
+        //when, then
+        Assertions.assertEquals(true,openBankTokenRepository.existsByMemberId(1L))
+    }
+    @Test
+    @Rollback
+    @DisplayName("토큰이 존재하지않는다.")
+    fun existsByMemberId_없음(){
+        //given
+        val memberId = 1L
+        //when, then
+        Assertions.assertEquals(false,openBankTokenRepository.existsByMemberId(memberId))
     }
 
 }
