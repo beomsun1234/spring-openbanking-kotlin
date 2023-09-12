@@ -8,4 +8,5 @@ import java.util.Optional
 @Repository
 interface OpenBankTokenRepository:JpaRepository<OpenBankToken, Long> {
     fun findByMemberId(memberId:Long):Optional<OpenBankToken>
+    fun existsByMemberId(memberId: Long):Boolean
 }
