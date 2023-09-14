@@ -23,7 +23,7 @@ internal class OpenBankApiClientTest() {
 
 
     private lateinit var openBankApiClient: OpenBankApiClient
-
+    private val successCode = "A0000"
     private lateinit var mockWebServer: MockWebServer
     private lateinit var objectMapper: ObjectMapper
 
@@ -96,7 +96,7 @@ internal class OpenBankApiClientTest() {
     fun requestOpenBankUserInfo() = runTest {
         //given
         val openBankUserInfoResponse = OpenBankUserInfoResponseDto(
-            rsp_code = "A00001",
+            rsp_code = successCode,
             rsp_message = "성공",
             user_seq_no = "1234",
             user_ci = "ci"
@@ -151,7 +151,7 @@ internal class OpenBankApiClientTest() {
     fun requestAccount()= runTest{
         //given
         val openBankRes = OpenBankAccountResponseDto(
-            rsp_code = "A00001",
+            rsp_code = successCode,
             rsp_message = "성공",
             res_list = arrayListOf(
                 OpenBankAccountDto(
@@ -212,7 +212,7 @@ internal class OpenBankApiClientTest() {
     fun requestBalance()= runTest{
         //given
         val openBankRes = OpenBankBalanceResponseDto(
-            rsp_code = "A00001",
+            rsp_code = successCode,
             rsp_message = "성공",
             balance_amt = "100000",
             available_amt = "100000",
