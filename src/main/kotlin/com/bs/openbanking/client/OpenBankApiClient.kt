@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter
 @Slf4j
 class OpenBankApiClient(
     private val webClient: WebClient,
-    ){
+){
     @Value("\${openbank.useCode}")
     private lateinit var useCode: String
     @Value("\${openbank.client-id}")
@@ -25,7 +25,7 @@ class OpenBankApiClient(
     private lateinit var clientSecret:String
     @Value("\${openbank.redirect-url}")
     private lateinit var redirectUrl:String
-
+    private val successCode = "A0000"
 
     /**
      * 오픈뱅킹 사용자 토큰 요청
@@ -121,9 +121,8 @@ class OpenBankApiClient(
             .header("Authorization", "bearer ${openBankBalanceRequestDto.accessToken}")
             .retrieve()
             .awaitBody<OpenBankBalanceResponseDto>()
-
         if(isOpenBankRequestError(body.rsp_code)){
-            throw NoSuchElementException("error")
+            throw NoSuchElementException(body.rsp_message)
         }
         return body
     }
@@ -134,7 +133,7 @@ class OpenBankApiClient(
 
     private fun generateRandomString():String{
         val charPool = ('A'..'Z') + ('0'..'9')
-        return List(8){charPool.random()}.joinToString { "" }
+        return List(9){charPool.random()}.joinToString("")
     }
 
     private fun getTransTime():String{
@@ -147,7 +146,7 @@ class OpenBankApiClient(
     //공통
     private fun isOpenBankRequestError(rspCode:String?):Boolean{
         if (rspCode.isNullOrEmpty()) return false
-        if (rspCode.startsWith("O")) return true
+        if (rspCode != successCode) return true
         return false
     }
 
