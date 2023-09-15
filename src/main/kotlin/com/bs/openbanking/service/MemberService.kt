@@ -28,7 +28,7 @@ class MemberService(
     suspend fun login(loginDto: loginDto): MemberDto{
         val member = memberRepository.findMemberByEmail(loginDto.email).orElseThrow()
 
-        if (!member.isVailedPassword(loginDto.password)) throw IllegalArgumentException("비밀번호 오류")
+        if (!member.isValidPassword(loginDto.password)) throw IllegalArgumentException("비밀번호 오류")
 
         return MemberDto.from(member)
     }
@@ -54,7 +54,7 @@ class MemberService(
             )
         )
 
-        member.updateOpenBankCi(openBankUserInfo.user_ci!!)
+        memberRepository.updateOpenBankCi(memberId, openBankUserInfo.user_ci!!)
     }
 
 
