@@ -17,6 +17,9 @@ class TokenService(
     private val tokenRepository: OpenBankTokenRepository
 ){
 
+    /**
+     * 토큰 및 오픈뱅킹 ID 저장
+     */
     @Transactional
     suspend fun saveOpenBankTokenAndOpenBankId(openBankTokenSaveDto: OpenBankTokenSaveDto){
         val member = memberRepository.findById(openBankTokenSaveDto.memberId).orElseThrow()
@@ -37,10 +40,13 @@ class TokenService(
         )
 
         if (!member.hasOpenBankId()){
-            member.updateOpenBankId(responseOpenBankToken.user_seq_no!!)
+            memberRepository.updateOpenBankId(id = openBankTokenSaveDto.memberId, openBankId = responseOpenBankToken.user_seq_no!!)
         }
     }
 
+    /**
+     * 토큰 조회
+     */
     suspend fun findOpenBankUserTokenByIdMemberId(memberId: Long): OpenBankTokenDto {
         return OpenBankTokenDto.from(tokenRepository.findByMemberId(memberId).orElseThrow())
     }
