@@ -7,13 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.annotation.Rollback
 import org.springframework.test.context.ActiveProfiles
-import java.util.NoSuchElementException
-
 
 @DataJpaTest
 @ActiveProfiles("test")
 internal class MemberRepositoryTest(
-    @Autowired private val memberRepository: MemberRepository
+    @Autowired private val memberRepository: MemberRepository,
+
 ) {
 
     @Test
@@ -35,6 +34,16 @@ internal class MemberRepositoryTest(
         val reslut = memberRepository.existsMemberById(memberId)
         //then
         Assertions.assertEquals(false, reslut)
+    }
+    @Test
+    @Rollback
+    fun 회원이존재하지않는다_NoSuchElementException(){
+        //given
+        val memberId = 1L
+        //when,then
+        Assertions.assertThrows(NoSuchElementException::class.java){
+            memberRepository.findById(memberId).orElseThrow()
+        }
     }
 
     @Test
@@ -58,6 +67,24 @@ internal class MemberRepositoryTest(
         Assertions.assertThrows(NoSuchElementException::class.java){
             memberRepository.findMemberByEmail(email).orElseThrow()
         }
+    }
+
+    @Test
+    @Rollback
+    fun updateMemberCi(){
+        //given
+        val savedMember = memberRepository.save(Member(email = "test", password = "test"))
+        //when,then
+        Assertions.assertEquals(1, memberRepository.updateOpenBankCi(savedMember.id!!, "test"))
+    }
+
+    @Test
+    @Rollback
+    fun updateMemberId(){
+        //given
+        val savedMember = memberRepository.save(Member(email = "test", password = "test"))
+        //when,then
+        Assertions.assertEquals(1, memberRepository.updateOpenBankId(savedMember.id!!, "test"))
     }
 
 }
