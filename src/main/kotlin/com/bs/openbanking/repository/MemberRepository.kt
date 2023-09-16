@@ -16,10 +16,10 @@ interface MemberRepository:JpaRepository<Member, Long> {
     @Modifying
     @Transactional
     @Query("UPDATE Member set openBankId = :openBankId where id = :id")
-    fun updateOpenBankId(id:Long,openBankId:String)
+    fun updateOpenBankId(id:Long,openBankId:String):Int
 
     @Modifying
     @Transactional
     @Query("UPDATE Member set openBankCi = :openBankCi where id = :id")
-    fun updateOpenBankCi(id:Long,openBankCi:String)
+    fun updateOpenBankCi(id:Long,openBankCi:String):Int
 }
