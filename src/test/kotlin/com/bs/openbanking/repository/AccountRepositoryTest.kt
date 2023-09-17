@@ -1,7 +1,9 @@
 package com.bs.openbanking.repository
 
 import com.bs.openbanking.domain.Account
+import com.bs.openbanking.domain.AccountType
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -28,7 +30,8 @@ internal class AccountRepositoryTest(
                 fintechUseNum = "1111",
                 bankName = "test",
                 accountNum = "test",
-                accountSeq = "test"
+                accountSeq = "test",
+                holderName = "test"
             )
         )
         //when
@@ -57,7 +60,8 @@ internal class AccountRepositoryTest(
                 fintechUseNum = "2222",
                 bankName = "test",
                 accountNum = "test",
-                accountSeq = "test"
+                accountSeq = "test",
+                holderName = "test"
             )
         )
         accountRepository.save(alreadySaved)
@@ -69,8 +73,53 @@ internal class AccountRepositoryTest(
                     fintechUseNum = "2222",
                     bankName = "test",
                     accountNum = "test",
-                    accountSeq = "test"
+                    accountSeq = "test",
+                    holderName = "test"
                 ))
         }
+    }
+
+    @Test
+    @Rollback
+    fun findMainAccountByMemberId(){
+        //given
+        var memberId = 1L
+        val account = accountRepository.save(
+            Account(
+                memberId = memberId,
+                bankCode = "test",
+                fintechUseNum = "1111",
+                bankName = "test",
+                accountNum = "test",
+                accountSeq = "test",
+                holderName = "test",
+                accountType = AccountType.MAIN
+            )
+        )
+        //when
+        val findAccount = accountRepository.findMainAccountByMemberId(memberId).orElseThrow()
+        //then
+        Assertions.assertEquals(true, findAccount.isMainAccount())
+    }
+
+    @Test
+    @Rollback
+    @DisplayName("타입 설정 안하면 sub으로 들어간다.")
+    fun findMainAccountByMemberId_2(){
+        //given
+        var memberId = 1L
+        val account = accountRepository.save(
+            Account(
+                memberId = memberId,
+                bankCode = "test",
+                fintechUseNum = "1111",
+                bankName = "test",
+                accountNum = "test",
+                accountSeq = "test",
+                holderName = "test",
+            )
+        )
+        //when
+        Assertions.assertEquals(AccountType.SUB, account.accountType)
     }
 }

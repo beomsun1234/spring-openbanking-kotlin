@@ -2,6 +2,7 @@ package com.bs.openbanking.service
 
 import com.bs.openbanking.client.OpenBankApiClient
 import com.bs.openbanking.domain.Account
+import com.bs.openbanking.domain.AccountType
 import com.bs.openbanking.domain.Member
 import com.bs.openbanking.dto.OpenBankTokenDto
 import com.bs.openbanking.dto.openbank.OpenBankAccountDto
@@ -45,14 +46,16 @@ internal class AccountServiceTest {
             fintechUseNum = "1111",
             accountNum = "test",
             bankCode = "11",
-            bankName = "test"
+            bankName = "test",
+            holderName = "test"
         )
         val account2 = Account(
             memberId=memberId,
             fintechUseNum = "2222",
             accountNum = "test2",
             bankCode = "22",
-            bankName = "test2"
+            bankName = "test2",
+            holderName = "test"
         )
         Mockito.`when`(memberRepository.findById(Mockito.anyLong()))
             .thenReturn(Optional.ofNullable(
@@ -79,6 +82,7 @@ internal class AccountServiceTest {
         ))).thenReturn(
             arrayListOf(
                 OpenBankAccountDto(
+                    account_holder_name = "test",
                     fintech_use_num = "1111",
                     bank_code_std = "11",
                     bank_name = "test",
@@ -86,6 +90,7 @@ internal class AccountServiceTest {
                     account_num_masked = "test",
                 ),
                 OpenBankAccountDto(
+                    account_holder_name = "test",
                     fintech_use_num = "2222",
                     bank_code_std = "22",
                     bank_name = "test2",
@@ -110,14 +115,16 @@ internal class AccountServiceTest {
             fintechUseNum = "1111",
             accountNum = "test",
             bankCode = "11",
-            bankName = "test"
+            bankName = "test",
+            holderName = "test"
         )
         val account2 = Account(
             memberId=memberId,
             fintechUseNum = "2222",
             accountNum = "test2",
             bankCode = "22",
-            bankName = "test2"
+            bankName = "test2",
+            holderName = "test"
         )
         Mockito.`when`(memberRepository.findById(Mockito.anyLong()))
             .thenReturn(Optional.ofNullable(
@@ -146,6 +153,7 @@ internal class AccountServiceTest {
         ))).thenReturn(
             arrayListOf(
                 OpenBankAccountDto(
+                    account_holder_name = "test",
                     fintech_use_num = "1111",
                     bank_code_std = "11",
                     bank_name = "test",
@@ -153,6 +161,7 @@ internal class AccountServiceTest {
                     account_num_masked = "test",
                 ),
                 OpenBankAccountDto(
+                    account_holder_name = "test",
                     fintech_use_num = "2222",
                     bank_code_std = "22",
                     bank_name = "test2",
@@ -175,14 +184,16 @@ internal class AccountServiceTest {
             fintechUseNum = "1111",
             accountNum = "test",
             bankCode = "11",
-            bankName = "test"
+            bankName = "test",
+            holderName = "test"
         )
         val account2 = Account(
             memberId=memberId,
             fintechUseNum = "2222",
             accountNum = "test2",
             bankCode = "22",
-            bankName = "test2"
+            bankName = "test2",
+            holderName = "test"
         )
         Mockito.`when`(memberRepository.findById(Mockito.anyLong()))
             .thenReturn(Optional.ofNullable(
@@ -321,7 +332,8 @@ internal class AccountServiceTest {
             fintechUseNum = "1111",
             accountNum = "test",
             bankCode = "11",
-            bankName = "test"
+            bankName = "test",
+            holderName = "test"
         )
         val account2 = Account(
             id = 2L,
@@ -329,7 +341,8 @@ internal class AccountServiceTest {
             fintechUseNum = "2222",
             accountNum = "test2",
             bankCode = "22",
-            bankName = "test2"
+            bankName = "test2",
+            holderName = "test"
         )
         val accounts = arrayListOf(
             account1,
@@ -374,7 +387,8 @@ internal class AccountServiceTest {
             fintechUseNum = "1111",
             accountNum = "test",
             bankCode = "11",
-            bankName = "test"
+            bankName = "test",
+            holderName = "test"
         )
         val account2 = Account(
             id = 2L,
@@ -382,7 +396,8 @@ internal class AccountServiceTest {
             fintechUseNum = "2222",
             accountNum = "test2",
             bankCode = "22",
-            bankName = "test2"
+            bankName = "test2",
+            holderName = "test"
         )
         val accounts = arrayListOf(
             account1,
@@ -437,7 +452,8 @@ internal class AccountServiceTest {
             fintechUseNum = "1111",
             accountNum = "test",
             bankCode = "11",
-            bankName = "test"
+            bankName = "test",
+            holderName = "test"
         )
         val account2 = Account(
             id = 2L,
@@ -445,7 +461,8 @@ internal class AccountServiceTest {
             fintechUseNum = "2222",
             accountNum = "test2",
             bankCode = "22",
-            bankName = "test2"
+            bankName = "test2",
+            holderName = "test"
         )
         val accounts = arrayListOf(
             account1,
@@ -459,5 +476,78 @@ internal class AccountServiceTest {
         assertThrows<NoSuchElementException> {
             accountService.findAccountsByMemberId(memberId)
         }
+    }
+
+    @Test
+    @DisplayName("주계좌가 설정되어있지 않을때 업데이트 요청")
+    fun updateAccountType()= runTest {
+        //given
+        val account = Account(
+            id = 1L,
+            memberId = 1L,
+            fintechUseNum = "1111",
+            bankName = "test",
+            bankCode = "11",
+            accountNum = "11112312312",
+            holderName = "test"
+        )
+
+        Mockito.`when`(accountRepository.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(account))
+        Mockito.`when`(accountRepository.findMainAccountByMemberId(1L)).thenReturn(Optional.ofNullable(null))
+        //when
+        accountService.updateAccountType(1L,1L)
+        //then
+        assertEquals(AccountType.MAIN, account.accountType)
+    }
+
+    @Test
+    @DisplayName("주계좌가 설정되어있을 경우 요청 계좌를 주계좌로 기존 주계좌를 보조 계좌로 업데이트")
+    fun updateAccountType_1()= runTest {
+        //given
+        val preMainAccount = Account(
+            id = 1L,
+            memberId = 1L,
+            fintechUseNum = "1111",
+            bankName = "test",
+            bankCode = "11",
+            accountNum = "11112312312",
+            accountType = AccountType.MAIN,
+            holderName = "test"
+        )
+        val account = Account(
+            id = 2L,
+            memberId = 1L,
+            fintechUseNum = "222222",
+            bankName = "test2",
+            bankCode = "11",
+            accountNum = "22222222222",
+            holderName = "test"
+        )
+        Mockito.`when`(accountRepository.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(account))
+        Mockito.`when`(accountRepository.findMainAccountByMemberId(1L)).thenReturn(Optional.ofNullable(preMainAccount))
+        //when
+        accountService.updateAccountType(1L,1L)
+        //then
+        assertEquals(AccountType.SUB, preMainAccount.accountType)
+        assertEquals(AccountType.MAIN, account.accountType)
+    }
+
+    @Test
+    @DisplayName("계좌가 없다.")
+    fun updateAccountType_NoSuchElementException()= runTest {
+        val account = Account(
+            id = 2L,
+            memberId = 1L,
+            fintechUseNum = "222222",
+            bankName = "test2",
+            bankCode = "11",
+            accountNum = "22222222222",
+            holderName = "test"
+        )
+        Mockito.`when`(accountRepository.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(null))
+        assertThrows<NoSuchElementException> {
+            accountService.updateAccountType(1L, 1L)
+        }
+
     }
 }
