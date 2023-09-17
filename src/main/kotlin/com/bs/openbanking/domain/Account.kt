@@ -1,13 +1,6 @@
 package com.bs.openbanking.domain
 
-import org.jetbrains.annotations.NotNull
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.Index
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(
@@ -25,7 +18,10 @@ class Account(
     val accountNum:String,
     @Column(nullable = false)
     val bankCode:String,
-    var accountSeq:String?=null
+    var accountSeq:String?=null,
+    @Enumerated(EnumType.STRING)
+    var accountType: AccountType?=AccountType.SUB,
+    var holderName:String,
 ) : BaseTime(){
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -36,5 +32,14 @@ class Account(
     }
     override fun hashCode(): Int {
         return fintechUseNum.hashCode()
+    }
+
+    fun updateAccountState(accountType: AccountType){
+        this.accountType = accountType
+    }
+
+    fun isMainAccount():Boolean{
+        if (this.accountType==AccountType.MAIN) return true
+        return false
     }
 }

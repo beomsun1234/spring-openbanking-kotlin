@@ -2,6 +2,7 @@ package com.bs.openbanking.service
 
 import com.bs.openbanking.client.OpenBankApiClient
 import com.bs.openbanking.domain.Account
+import com.bs.openbanking.domain.AccountType
 import com.bs.openbanking.dto.AccountDto
 import com.bs.openbanking.dto.openbank.OpenBankAccountRequestDto
 import com.bs.openbanking.dto.openbank.OpenBankBalanceRequestDto
@@ -11,6 +12,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import kotlin.NoSuchElementException
 
 @Service
@@ -44,12 +46,12 @@ class AccountService (
                     fintechUseNum = it.fintech_use_num!!,
                     bankCode = it.bank_code_std!!,
                     bankName = it.bank_name!!,
+                    holderName = it.account_holder_name!!,
                 ) }
 
         if (accounts.isEmpty()) throw IllegalArgumentException("모두 존재하는 계좌입니다.")
 
         return accountRepository.saveAll(accounts).size
-
     }
 
     private fun createDuplicateAccountCheckMap(accounts: List<Account>): HashMap<String, String> {
@@ -90,6 +92,8 @@ class AccountService (
                         memberId = it.memberId,
                         accountNumber = it.accountNum,
                         fintechUseNum = it.fintechUseNum,
+                        accountType = it.accountType,
+                        holderName = it.holderName,
                     )
                 }
             }.awaitAll()
@@ -107,6 +111,22 @@ class AccountService (
             println(e.message)
             "0"
         }
-
     }
+
+    /**
+     * 계좌 설정
+     */
+    @Transactional
+    suspend fun updateAccountType(memberId: Long, accountId: Long){
+        val account = accountRepository.findById(accountId).orElseThrow()
+
+        if(account.isMainAccount()) throw IllegalArgumentException("이미 주계좌로 설정되어있습니다.")
+
+        val preMainAccount = accountRepository.findMainAccountByMemberId(memberId = memberId).orElse(null)
+            ?: return account.updateAccountState(accountType = AccountType.MAIN)
+
+        preMainAccount.updateAccountState(accountType = AccountType.SUB)
+        account.updateAccountState(accountType = AccountType.MAIN)
+    }
+
 }
